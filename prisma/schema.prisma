@@ -3,6 +3,20 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Product {
+  id               String   @id @default(cuid())
+  name             String
+  currentStock     Float
+  reorderThreshold Float
+  avgDailySales    Float?
+  unit             String   @default("units")
+  category         String?
+  supplier         String?
+  supplierPhone    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
