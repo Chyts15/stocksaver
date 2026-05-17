@@ -4,7 +4,7 @@ import { deleteProduct } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
 import { getStockStatus } from '@/lib/calculations'
 import { StockBadge } from '@/components/StockBadge'
-
+export const dynamic = 'force-dynamic'
 export default async function ProductsPage() {
     const products = await prisma.product.findMany({ orderBy: { createdAt: 'desc' } })
 

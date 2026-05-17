@@ -5,7 +5,7 @@ import { StockBadge } from '@/components/StockBadge'
 import { Button } from '@/components/ui/button'
 import { quickRestock } from '@/lib/actions'
 import { CopyReorderButton } from '@/components/CopyReorderButton'
-
+export const dynamic = 'force-dynamic'
 export default async function DashboardPage({
                                                 searchParams,
                                             }: {

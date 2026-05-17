@@ -1,7 +1,7 @@
 import { createProduct } from '@/lib/actions'
 import { ProductForm } from '@/components/ProductForm'
 import Link from 'next/link'
-
+export const dynamic = 'force-dynamic'
 export default function NewProductPage() {
     return (
         <div className="max-w-2xl">
