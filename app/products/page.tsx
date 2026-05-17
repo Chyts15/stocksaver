@@ -1,11 +1,15 @@
+import { unstable_noStore as noStore } from 'next/cache'
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { deleteProduct } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
 import { getStockStatus } from '@/lib/calculations'
 import { StockBadge } from '@/components/StockBadge'
+
 export const dynamic = 'force-dynamic'
+
 export default async function ProductsPage() {
+    noStore()
     const products = await prisma.product.findMany({ orderBy: { createdAt: 'desc' } })
 
     return (
@@ -73,7 +77,7 @@ export default async function ProductsPage() {
                                         )}
                                     </td>
                                     <td className="px-5 py-4 text-right space-x-2">
-                                        <Link href={"/products/" + p.id + "/edit"}>
+                                        <Link href={'/products/' + p.id + '/edit'}>
                                             <Button variant="outline" size="sm">Edit</Button>
                                         </Link>
                                         <form action={deleteProduct.bind(null, p.id)} className="inline">

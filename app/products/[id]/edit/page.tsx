@@ -1,14 +1,18 @@
+import { unstable_noStore as noStore } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { updateProduct } from '@/lib/actions'
 import { ProductForm } from '@/components/ProductForm'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditProductPage({
                                                   params,
                                               }: {
     params: Promise<{ id: string }>
 }) {
+    noStore()
     const { id } = await params
     const product = await prisma.product.findUnique({ where: { id } })
     if (!product) notFound()

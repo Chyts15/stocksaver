@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from 'next/cache'
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import { getStockStatus } from '@/lib/calculations'
@@ -5,12 +6,15 @@ import { StockBadge } from '@/components/StockBadge'
 import { Button } from '@/components/ui/button'
 import { quickRestock } from '@/lib/actions'
 import { CopyReorderButton } from '@/components/CopyReorderButton'
+
 export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage({
                                                 searchParams,
                                             }: {
     searchParams: Promise<{ category?: string }>
 }) {
+    noStore()
     const { category } = await searchParams
     const allProducts = await prisma.product.findMany()
 
@@ -32,12 +36,10 @@ export default async function DashboardPage({
 
     const criticalCount = lowStock.filter(p => p.status.urgency === 'critical').length
     const outOfStock = lowStock.filter(p => p.currentStock <= 0).length
-
     const reorderProducts = allProducts.filter(p => p.currentStock <= p.reorderThreshold)
 
     return (
         <div>
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Reorder Dashboard</h1>
@@ -57,7 +59,6 @@ export default async function DashboardPage({
                 </div>
             </div>
 
-            {/* Stat Cards */}
             <div className="grid grid-cols-3 gap-4 mb-8">
                 <div className="bg-white rounded-xl border border-slate-200 p-5">
                     <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">Needs Reorder</p>
@@ -77,7 +78,6 @@ export default async function DashboardPage({
                 </div>
             </div>
 
-            {/* Category Filter Chips */}
             {categories.length > 0 && (
                 <div className="flex gap-2 flex-wrap mb-5">
                     <Link
@@ -104,7 +104,6 @@ export default async function DashboardPage({
                 </div>
             )}
 
-            {/* Empty State */}
             {lowStock.length === 0 ? (
                 <div className="text-center py-24 border-2 border-dashed border-slate-200 rounded-xl bg-white">
                     <p className="text-5xl mb-4">🎉</p>
