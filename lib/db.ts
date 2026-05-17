@@ -1,23 +1,30 @@
 import { PrismaClient } from '@prisma/client'
-import { createClient } from '@libsql/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
 
 const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClient | undefined
 }
 
-let prismaInstance: PrismaClient
+function getClient() {
+    if (globalForPrisma.prisma) return globalForPrisma.prisma
 
-const dbUrl = process.env.DATABASE_URL ?? ''
+    const url = process.env.DATABASE_URL ?? ''
 
-if (dbUrl.startsWith('file:') || dbUrl === '') {
-    prismaInstance = new PrismaClient()
-} else {
-    const client = createClient({ url: dbUrl })
-    const adapter = new PrismaLibSql(client)
-    prismaInstance = new PrismaClient({ adapter } as any)
+    if (!url || url.startsWith('file:')) {
+        const client = new PrismaClient()
+        globalForPrisma.prisma = client
+        return client
+    }
+
+    // Dynamic require so it's not evaluated at build time
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { createClient } = require('@libsql/client')
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { PrismaLibSql } = require('@prisma/adapter-libsql')
+    const libsql = createClient({ url })
+    const adapter = new PrismaLibSql(libsql)
+    const client = new PrismaClient({ adapter } as any)
+    globalForPrisma.prisma = client
+    return client
 }
 
-export const prisma = globalForPrisma.prisma ?? prismaInstance
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+export const prisma = getClient()
